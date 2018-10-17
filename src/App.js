@@ -2,27 +2,60 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+const allUsers = ["John", 'Jack', 'James', "Jasper", "Jim", "Andy"];
+
+  class App extends Component {
+    constructor() {
+      super();
+
+      this.state = {
+        filteredUsers: allUsers
+      };
+    }
+
+    //asynchronous option
+
+    filterUsers(e) {
+      const text = e.currentTarget.value;
+      const filteredUsers = this.getFilteredUsersForText(text)
+      .then( filteredUsers => this.setState({filteredUsers}))
+      .catch(err => console.log(err));
+    }
+
+    getFilteredUsersForText(text) {
+      return new Promise(resolve => {
+        const time = (Math.random() + 1) * 250;
+        setTimeout(() => {
+          const filteredUsers = allUsers.filter(user => user.toLowerCase().includes(text.toLowerCase()));
+          resolve(filteredUsers);
+        }, time) ;
+      });
+    }
+
+    render() {
+      return (
+        <div>
+          <input onInput={this.filterUsers.bind(this)}/>
+          <UsersList users={this.state.filteredUsers}/>
+        </div>
+      );
+    }
   }
-}
+
+  const UsersList = ({users}) => {
+    
+    if (users.length > 0) {
+      return (
+        <ul>
+          {users.map(user => <li key={user}>{user}</li>)}
+        </ul>
+      );
+    }
+
+    return (
+      <p>No results!</p>
+    );
+    
+  };  
 
 export default App;
